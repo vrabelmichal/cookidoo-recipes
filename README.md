@@ -34,4 +34,24 @@ Expected routes after deployment and domain configuration:
 
 Cloudflare Pages Git integration can also provide preview deployments for PR branches.
 
+## Existing Cloudflare Workers deployment
+
+The connected **Workers Builds** project is named `cookidoo-recipes`. Its
+`wrangler.jsonc` explicitly sets that name and serves the existing root HTML
+files as static assets. The `.assetsignore` allowlist publishes only `index.html`
+and `zupa-pieczarkowa-thermomix.html`; update it when adding a public page.
+Uploader scripts, data, documentation and local files are excluded.
+
+For Workers Builds, keep the root directory at the repository root, leave the
+build command blank, and use `npx wrangler deploy` as the production deploy
+command (`npx wrangler versions upload` for non-production branch previews).
+The repository's package name describes the local uploader and is deliberately
+different from the deployed Worker name. The config prevents automatic detection
+from treating the uploader package name as a new Worker.
+
+Deployment tooling uses a locked Wrangler development dependency. To validate
+the config without deploying or authenticating, run `npm ci` followed by
+`npm run deploy:check`. The uploader itself still needs no dependency installation.
+Keep Cookidoo cookies outside the repository as described in the import guide.
+
 > **Cookidoo:** Public recipe URLs and `schema.org/Recipe` metadata may help import, but support and preservation of Thermomix settings are not guaranteed. Verify imported details before cooking.

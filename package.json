@@ -2,10 +2,16 @@
   "name": "cookidoo-recipes-local-uploader",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "test": "node --test",
     "validate": "node scripts/cookidoo-upload.mjs validate data/zupa-pieczarkowa-thermomix.json",
-    "preview": "node scripts/cookidoo-upload.mjs preview data/zupa-pieczarkowa-thermomix.json"
+    "preview": "node scripts/cookidoo-upload.mjs preview data/zupa-pieczarkowa-thermomix.json",
+    "deploy:check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4.160.1"
   }
 }

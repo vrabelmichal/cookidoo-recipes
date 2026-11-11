@@ -1,0 +1,4 @@
+# Publish only the public recipe pages. Git ignores do not protect static assets.
+*
+!index.html
+!zupa-pieczarkowa-thermomix.html
