@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "id": "zupa-pieczarkowa-thermomix",
+  "name": "Zupa pieczarkowa z ziemniakami – Thermomix TM7",
+  "locale": "pl-PL",
+  "model": "TM7",
+  "servings": 4,
+  "prepTime": 600,
+  "totalTime": 2580,
+  "ingredients": [
+    "500 g pieczarek",
+    "400 g ziemniaków",
+    "1 marchewka (ok. 100 g)",
+    "1 cebula (ok. 100 g)",
+    "30 g masła",
+    "800 g bulionu warzywnego lub drobiowego",
+    "120 g śmietanki 18% lub 30%",
+    "1 liść laurowy",
+    "2 ziarna ziela angielskiego",
+    "½ łyżeczki soli (do smaku)",
+    "¼ łyżeczki pieprzu",
+    "Świeży koperek lub natka pietruszki"
+  ],
+  "steps": [
+    {
+      "name": "Posiekaj cebulę",
+      "text": "Włóż 100 g cebuli (1 cebulę przekrojoną na pół) do naczynia miksującego. Po posiekaniu zgarnij kopystką ze ścianek.",
+      "ingredientSpans": ["100 g cebuli"],
+      "machine": {
+        "seconds": 5,
+        "temperature": null,
+        "speed": 5,
+        "reverse": false
+      }
+    },
+    {
+      "name": "Podsmaż cebulę",
+      "text": "Dodaj 30 g masła. Załóż pokrywę TM7 z prawidłowo zamocowaną osłoną pokrywy.",
+      "ingredientSpans": ["30 g masła"],
+      "machine": {
+        "seconds": 180,
+        "temperature": 120,
+        "speed": 1,
+        "reverse": false
+      }
+    },
+    {
+      "name": "Duś pieczarki",
+      "text": "Dodaj 500 g pieczarek pokrojonych ręcznie w plasterki. Załóż pokrywę TM7 z osłoną pokrywy; pozostaw otwory parowe drożne.",
+      "ingredientSpans": ["500 g pieczarek"],
+      "machine": {
+        "seconds": 480,
+        "temperature": 120,
+        "speed": 1,
+        "reverse": true
+      }
+    },
+    {
+      "name": "Ugotuj zupę",
+      "text": "Dodaj 400 g ziemniaków w kostce (1,5 cm), 100 g marchewki w drobnej kostce lub półplasterkach, 800 g bulionu, 1 liść laurowy, 2 ziarna ziela angielskiego, ½ łyżeczki soli i ¼ łyżeczki pieprzu. Po gotowaniu sprawdź ziemniaki; jeśli trzeba, gotuj 3–5 minut dłużej.",
+      "ingredientSpans": ["400 g ziemniaków", "100 g marchewki", "800 g bulionu", "1 liść laurowy", "2 ziarna ziela angielskiego", "½ łyżeczki soli", "¼ łyżeczki pieprzu"],
+      "machine": {
+        "seconds": 1200,
+        "temperature": 100,
+        "speed": 1,
+        "reverse": true
+      }
+    },
+    {
+      "name": "Dodaj śmietankę",
+      "text": "Jeśli możesz, wyjmij liść laurowy i ziele angielskie. Dodaj 120 g śmietanki. Kwaśną śmietanę 18% zahartuj najpierw kilkoma łyżkami gorącej zupy.",
+      "ingredientSpans": ["120 g śmietanki"],
+      "machine": {
+        "seconds": 120,
+        "temperature": 90,
+        "speed": 1,
+        "reverse": true
+      }
+    },
+    {
+      "name": "Podawaj",
+      "text": "Dodaj posiekany koperek lub natkę pietruszki do smaku. Wymieszaj kopystką i podawaj.",
+      "ingredientSpans": ["koperek lub natkę pietruszki"]
+    }
+  ],
+  "notes": [
+    "Nie przekraczaj oznaczenia maksymalnego poziomu napełnienia naczynia TM7 (2,2 l). Jeśli składniki się nie mieszczą, zmniejsz ilość bulionu.",
+    "Podczas pracy używaj pokrywy TM7 z prawidłowo zamocowaną osłoną pokrywy. Nie zasłaniaj otworów odprowadzających parę. Przed otwarciem zatrzymaj urządzenie i ostrożnie otwieraj pokrywę z dala od twarzy.",
+    "Po dodaniu bulionu gotuj zupę w temperaturze nie wyższej niż 100°C i przy prędkości nie większej niż 2. Ten przepis używa obrotów wstecznych 1. Jeśli zupa zaczyna kipieć, zmniejsz temperaturę lub przerwij gotowanie.",
+    "W Thermomixie pieczarki raczej się duszą niż rumienią. Dla mocniejszego smaku podsmaż je wcześniej na patelni."
+  ]
+}

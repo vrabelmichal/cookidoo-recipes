@@ -1,0 +1,7 @@
+.env
+.env.*
+cookies*.txt
+*.secret
+.cookidoo-upload-state*
+node_modules/
+.wrangler/
