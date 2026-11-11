@@ -8,14 +8,15 @@ No cookie, login or account request goes through the public recipe website.
 **Verified locally:** offline validation/preview and mocked create, patch,
 read-back, error and recovery tests. **Verified against the owner's Polish account:**
 read-only access and exact read-back of the imported recipe's title, all 12
-ingredients and six steps. **Not verified:** an actual Thermomix or guided actions.
+ingredients, six steps and saved TM7 model tag. **Not verified:** cooking on an
+actual Thermomix or guided actions.
 The command fails if the selected host/locale does not return the expected JSON.
 
 Machine times, temperatures, speeds and reverse direction are imported as Polish
 **text instructions**. This version does not generate guided device actions.
 Review the settings and enter them manually while cooking, or configure them in
-the Cookidoo editor yourself. The uploader targets TM6; retaining existing TM5
-notes in the source does not establish compatibility with another model.
+the Cookidoo editor yourself. The recipe and uploader now target **TM7**. The
+public page at the same root URL also uses the TM7 instructions.
 
 ## 1. Open the implementation branch and preview
 
@@ -97,8 +98,8 @@ by your local cookies. There is no automatic upload when running tests, validate
 or preview. The uploader creates one draft, saves its ID locally, patches the
 content, then reads it back. It prints the ID and edit link **only after the title
 and all ingredient/step text match in order**. The comparison includes the textual
-machine settings and safety notes; separate API time/yield/tool metadata is not
-certified by the read-back comparison.
+machine settings and safety notes, and verifies the saved TM7 model tag. Separate
+API time/yield metadata is not certified by the read-back comparison.
 
 Open the printed link, or open **Moje przepisy → Utworzone przepisy** in your
 browser. Check all ingredients, four portions, six steps, reverse direction and
@@ -193,3 +194,21 @@ textual machine settings and safety notes. The response handling now accepts
 successful PATCH acknowledgements without JSON. Resume recognizes matching
 content and records completion without repeating the write. Device behavior and
 automatic guided actions remain unverified.
+
+### TM7 replacement (2026-11-11)
+
+At the owner's request, the canonical recipe, public HTML/JSON-LD and uploader
+were adapted for TM7. Ingredients, four portions, times, temperatures and reverse
+direction were retained. The TM5 note and basket-on-lid instruction were removed.
+TM7 lid/cap, unobstructed steam openings, 2.2 litre maximum fill and soup cooking
+limits (at most 100°C and speed 2 after adding stock) follow the
+[TM7 manual, pages 5 and 9](https://assets.vorwerk.com/content/dam/general/zendesk-guide/manuals/tm7_2025-04/user%20manual_TM7_11012_V1.0_GB.pdf).
+The 120°C steps are the onion/mushroom preparation before adding stock.
+
+After the owner deleted the old TM6 recipe, a read-only check confirmed an empty
+Created Recipes collection and HTTP 410 for the old ID. Its local ledger was
+archived outside the repository before creating the authorized replacement.
+The new upload and exact read-back succeeded, including the saved TM7 model tag.
+All 18 offline tests pass. The recipe has not been cooked/tested on a TM7; guided
+machine actions are still not generated. Future runs retain the replacement's
+ledger and verify the same recipe rather than creating a duplicate.

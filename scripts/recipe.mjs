@@ -8,7 +8,7 @@ export function validateRecipe(r) {
   require(text(r.id) && /^[a-z0-9-]+$/.test(r.id), 'id must be a stable slug');
   require(text(r.name) && r.name.length <= 200, 'name');
   require(r.locale === 'pl-PL', 'this version supports Polish content (pl-PL) only');
-  require(r.model === 'TM6', 'this version targets TM6 only');
+  require(r.model === 'TM7', 'this version targets TM7 only');
   require(seconds(r.totalTime) && seconds(r.prepTime) && r.prepTime <= r.totalTime, 'times must be seconds');
   require(Number.isSafeInteger(r.servings) && r.servings > 0 && r.servings <= 100, 'servings');
   require(Array.isArray(r.ingredients) && r.ingredients.length > 0 && r.ingredients.length <= 100 && r.ingredients.every(text), 'ingredients');
@@ -50,8 +50,9 @@ export function verifyReadback(body, recipe) {
   const p = buildPayload(recipe);
   const ingredients = rc?.recipeIngredient?.map(x => typeof x === 'string' ? x : x.text);
   const steps = rc?.recipeInstructions?.map(x => typeof x === 'string' ? x : x.text);
+  const tools = rc?.tool?.map(x => typeof x === 'string' ? x : x.name);
   if (rc?.name !== recipe.name || JSON.stringify(ingredients) !== JSON.stringify(p.ingredients.map(x => x.text)) ||
-      JSON.stringify(steps) !== JSON.stringify(p.instructions.map(x => x.text))) {
+      JSON.stringify(steps) !== JSON.stringify(p.instructions.map(x => x.text)) || !tools?.includes(recipe.model)) {
     throw new Error('Read-back mismatch: inspect the saved recipe in Cookidoo; do not create another draft.');
   }
   return true;

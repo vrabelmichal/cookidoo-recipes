@@ -9,7 +9,7 @@ import { upload } from '../scripts/upload.mjs';
 const recipe = JSON.parse(readFileSync(new URL('../data/zupa-pieczarkowa-thermomix.json', import.meta.url)));
 const copy = () => structuredClone(recipe);
 const payload = buildPayload(recipe);
-const readback = () => ({ recipeContent: { name: recipe.name, recipeIngredient: payload.ingredients.map(x=>x.text), recipeInstructions: payload.instructions.map(x=>({text:x.text})) } });
+const readback = () => ({ recipeContent: { name: recipe.name, recipeIngredient: payload.ingredients.map(x=>x.text), recipeInstructions: payload.instructions.map(x=>({text:x.text})), tool: ['TM7'] } });
 function fixture({ fail = '', state = null, mismatch = false, probeFail = false } = {}) {
   const calls = [];
   const store = { value: state, read: async()=>store.value, write: async s=>{ store.value=structuredClone(s); } };
@@ -40,11 +40,11 @@ test('payload preserves exact settings, reverse direction and safeguards as text
   assert.ok(payload.instructions.every(s=>s.annotations.length===0));
   assert.doesNotMatch(payload.instructions[5].text,/Ustawienia/);
   assert.match(payload.instructions[0].text,/maksymalnego poziomu napełnienia/);
-  assert.match(payload.instructions[2].text,/koszyczek zamiast miarki/);
+  assert.match(payload.instructions[2].text,/pokrywę TM7/);
   assert.match(payload.instructions[4].text,/zahartuj/);
 });
 test('invalid versions, locale, model, times, ingredients and machine fields fail',()=>{
-  for(const patch of [{schemaVersion:2},{id:'../x'},{locale:'de-DE'},{model:'TM7'},{servings:0},{totalTime:NaN},{prepTime:99999},{ingredients:[]},{steps:[]},{notes:null},{name:''}]) {
+  for(const patch of [{schemaVersion:2},{id:'../x'},{locale:'de-DE'},{model:'TM6'},{servings:0},{totalTime:NaN},{prepTime:99999},{ingredients:[]},{steps:[]},{notes:null},{name:''}]) {
     assert.throws(()=>validateRecipe({...copy(),...patch}));
   }
   for(const patch of [{seconds:-1},{temperature:160},{reverse:'true'},{speed:20},{reverse:true,speed:5}]) {
@@ -58,6 +58,17 @@ test('read-back checks exact title, content and order, not just counts',()=>{
     const b=readback(); mutate(b); assert.throws(()=>verifyReadback(b,recipe),/mismatch/);
   }
   assert.throws(()=>verifyReadback({},recipe));
+  const wrongModel=readback(); wrongModel.recipeContent.tool=['TM6'];
+  assert.throws(()=>verifyReadback(wrongModel,recipe),/mismatch/);
+});
+test('TM7 model and lid guidance replace older-model instructions',()=>{
+  assert.deepEqual(payload.tools,['TM7']);
+  const content=JSON.stringify(payload);
+  assert.doesNotMatch(content,/TM5|TM6|koszyczek|miarki/);
+  assert.match(content,/osłoną pokrywy/);
+  assert.match(content,/2,2 l/);
+  assert.match(content,/nie wyższej niż 100°C/);
+  assert.match(content,/prędkości nie większej niż 2/);
 });
 test('target rejects host injection, insecure hosts and wrong locales',()=>{
   for(const host of ['https://cookidoo.pl','cookidoo.pl.evil.test','evil.test','cookidoo.pl/path','cookidoo.pl:443']) assert.throws(()=>target(host));

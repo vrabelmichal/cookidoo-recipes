@@ -16,8 +16,9 @@ unofficial Created Recipes integration. Node.js 22+ is required; no dependencies
 need installing. Start with `npm test`, `npm run validate` and `npm run preview`.
 Authentication stays outside this repository on your own computer, and an upload
 requires `--confirm`. Polish text and all machine settings are preserved as text;
-guided device actions remain unverified. Live Polish-account read-back has
-confirmed the bundled recipe's title, all ingredients and all step text.
+guided device actions remain unverified. The bundled recipe targets TM7, with
+adapted lid instructions. Live Polish-account read-back has confirmed its TM7
+model tag, title, all ingredients and all step text.
 
 ## Deploy to Cloudflare Pages
 

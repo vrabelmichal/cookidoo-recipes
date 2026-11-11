@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "zupa-pieczarkowa-thermomix",
-  "name": "Zupa pieczarkowa z ziemniakami – Thermomix",
+  "name": "Zupa pieczarkowa z ziemniakami – Thermomix TM7",
   "locale": "pl-PL",
-  "model": "TM6",
+  "model": "TM7",
   "servings": 4,
   "prepTime": 600,
   "totalTime": 2580,
@@ -34,7 +34,7 @@
     },
     {
       "name": "Podsmaż cebulę",
-      "text": "Dodaj masło. 3 minuty, 120°C, obroty 1. W TM5 można zastosować temperaturę Varoma.",
+      "text": "Dodaj masło. Załóż pokrywę TM7 z prawidłowo zamocowaną osłoną pokrywy. 3 minuty, 120°C, obroty 1.",
       "machine": {
         "seconds": 180,
         "temperature": 120,
@@ -44,7 +44,7 @@
     },
     {
       "name": "Duś pieczarki",
-      "text": "Dodaj pieczarki pokrojone ręcznie w plasterki. 8 minut, 120°C, obroty wsteczne 1. Umieść koszyczek zamiast miarki na pokrywie, by umożliwić odparowanie wody.",
+      "text": "Dodaj pieczarki pokrojone ręcznie w plasterki. Załóż pokrywę TM7 z prawidłowo zamocowaną osłoną pokrywy. Pozostaw otwory odprowadzające parę drożne. 8 minut, 120°C, obroty wsteczne 1.",
       "machine": {
         "seconds": 480,
         "temperature": 120,
@@ -78,7 +78,9 @@
     }
   ],
   "notes": [
-    "Nie przekraczaj oznaczenia maksymalnego poziomu napełnienia naczynia. Jeśli składniki się nie mieszczą, zmniejsz ilość bulionu.",
+    "Nie przekraczaj oznaczenia maksymalnego poziomu napełnienia naczynia TM7 (2,2 l). Jeśli składniki się nie mieszczą, zmniejsz ilość bulionu.",
+    "Podczas pracy używaj pokrywy TM7 z prawidłowo zamocowaną osłoną pokrywy. Nie zasłaniaj otworów odprowadzających parę. Przed otwarciem zatrzymaj urządzenie i ostrożnie otwieraj pokrywę z dala od twarzy.",
+    "Po dodaniu bulionu gotuj zupę w temperaturze nie wyższej niż 100°C i przy prędkości nie większej niż 2. Ten przepis używa obrotów wstecznych 1. Jeśli zupa zaczyna kipieć, zmniejsz temperaturę lub przerwij gotowanie.",
     "Po dodaniu pieczarek używaj obrotów wstecznych, aby zachować kawałki warzyw.",
     "Marchewkę pokrój w drobną kostkę lub półplasterki, ziemniaki w kostkę ok. 1,5 cm. Jeśli możesz, przed dodaniem śmietanki wyjmij liść laurowy i ziele angielskie."
   ]
