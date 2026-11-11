@@ -8,6 +8,16 @@ The site's homepage at **https://cookidoo-recipes.michalvrabel.sk/** lists all a
 
 - [Zupa pieczarkowa z ziemniakami](zupa-pieczarkowa-thermomix.html) — https://cookidoo-recipes.michalvrabel.sk/zupa-pieczarkowa-thermomix.html
 
+## Import into Cookidoo Created Recipes
+
+Cookidoo's website URL importer has rejected this custom domain. Use the
+[local uploader instructions](docs/cookidoo-upload.md) for the optional,
+unofficial Created Recipes integration. Node.js 22+ is required; no dependencies
+need installing. Start with `npm test`, `npm run validate` and `npm run preview`.
+Authentication stays outside this repository on your own computer, and an upload
+requires `--confirm`. Polish text and all machine settings are preserved as text;
+guided device actions and live Polish-account compatibility remain unverified.
+
 ## Deploy to Cloudflare Pages
 
 This repository is a plain static website with no build tools or `recipes/` subdirectory. All recipe pages are at the site root.

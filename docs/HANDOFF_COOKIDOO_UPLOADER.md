@@ -2,6 +2,11 @@
 
 **Status:** implementation requested; this document specifies work for a coding agent. **No Cookidoo upload has been performed.**
 
+**Implementation follow-up:** the `feat/local-cookidoo-uploader` branch implements
+the offline MVP and opt-in local flow. See [usage and verification limits](cookidoo-upload.md).
+This historical specification is retained; live account/device acceptance criteria
+below are still pending.
+
 **Date:** 2026-11-11  
 **Repository:** `vrabelmichal/cookidoo-recipes`  
 **Target:** Polish Cookidoo account / Created Recipes, with explicit user-authorized upload.  
