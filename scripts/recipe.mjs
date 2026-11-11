@@ -17,6 +17,7 @@ export function validateRecipe(r) {
   require(Array.isArray(r.steps) && r.steps.length > 0 && r.steps.length <= 100, 'steps');
   for (const s of r.steps) {
     require(s && text(s.name) && text(s.text), 'step name/text');
+    require(Array.isArray(s.ingredientSpans) && s.ingredientSpans.every(span => text(span) && s.text.includes(span)), 'ingredient annotations must match step text');
     if (s.machine !== undefined) {
       const m = s.machine;
       require(m && seconds(m.seconds) && Number.isFinite(m.speed) && m.speed >= 0.5 && m.speed <= 10 && typeof m.reverse === 'boolean', 'machine duration/speed/reverse');
@@ -37,19 +38,42 @@ export function buildPayload(recipe) {
   const r = validateRecipe(recipe);
   return {
     ingredients: r.ingredients.map(text => ({ type: 'INGREDIENT', text })),
-    instructions: r.steps.map(s => ({
-      type: 'STEP',
-      text: `${s.name}\n${s.text}${s.machine ? `\n${machineText(s.machine)}` : ''}`,
-      // Reverse direction is not established by the upstream TTS schema.
-      // Preserve ALL settings as text rather than emit potentially unsafe actions.
-      annotations: [],
-    })),
+    instructions: r.steps.map(s => {
+      const text = `${s.name}\n${s.text}${s.machine ? `\n${machineText(s.machine)}` : ''}`;
+      let cursor = s.name.length + 1;
+      const annotations = s.ingredientSpans.map(description => {
+        const offset = text.indexOf(description, cursor);
+        if (offset < 0) throw new Error('Ingredient spans must appear in step order.');
+        cursor = offset + description.length;
+        return { type:'INGREDIENT',data:{description},position:{offset,length:description.length} };
+      });
+      if (s.machine) {
+        const m=s.machine;
+        const label=machineText(m);
+        annotations.push({type:'TTS',data:{speed:String(m.speed),time:m.seconds,
+          ...(m.reverse ? {direction:'CCW'} : {}),
+          ...(m.temperature === null ? {} : {temperature:{value:String(m.temperature),unit:'C'}})},
+          position:{offset:text.length-label.length,length:label.length}});
+      }
+      return {type:'STEP',text,annotations};
+    }),
     hints: r.notes.join('\n\n'),
     tools: [r.model], totalTime: r.totalTime, prepTime: r.prepTime,
     yield: { value: r.servings, unitText: 'portion' },
   };
 }
 export const fingerprint = r => createHash('sha256').update(JSON.stringify({ name: r.name, ...buildPayload(r) })).digest('hex');
+
+export function verifyRenderedAnnotations(html, recipe) {
+  const content = value => value.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').trim();
+  const actualIngredients = [...html.matchAll(/<cr-ingredient\b[^>]*>([\s\S]*?)<\/cr-ingredient>/g)].map(m=>content(m[1]));
+  const actualSettings = [...html.matchAll(/<cr-tts\b[^>]*>([\s\S]*?)<\/cr-tts>/g)].map(m=>content(m[1]));
+  if (JSON.stringify(actualIngredients)!==JSON.stringify(recipe.steps.flatMap(s=>s.ingredientSpans)) ||
+      JSON.stringify(actualSettings)!==JSON.stringify(recipe.steps.filter(s=>s.machine).map(s=>machineText(s.machine)))) {
+    throw new Error('Saved ingredient/settings actions do not match. Inspect the recipe before cooking.');
+  }
+  return true;
+}
 
 export function verifyReadback(body, recipe) {
   const rc = body?.recipeContent;

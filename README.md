@@ -15,10 +15,11 @@ Cookidoo's website URL importer has rejected this custom domain. Use the
 unofficial Created Recipes integration. Node.js 22+ is required; no dependencies
 need installing. Start with `npm test`, `npm run validate` and `npm run preview`.
 Authentication stays outside this repository on your own computer, and an upload
-requires `--confirm`. Polish text and all machine settings are preserved as text;
-guided device actions remain unverified. The bundled recipe targets TM7, with
-adapted lid instructions. Live Polish-account read-back has confirmed its TM7
-model tag, title, all ingredients and all step text.
+requires `--confirm`. Each step includes ingredient amounts and its machine
+settings, with Cookidoo ingredient and TTS annotations. The bundled recipe targets
+TM7, with adapted lid instructions. Live read-back confirms its model, title,
+ingredients and step text; the Cookidoo editor renders all 12 ingredient actions
+and five settings actions. Physical device operation remains untested.
 
 ## Deploy to Cloudflare Pages
 

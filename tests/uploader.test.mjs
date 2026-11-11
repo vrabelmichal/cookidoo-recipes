@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { validateRecipe, buildPayload, fingerprint, verifyReadback } from '../scripts/recipe.mjs';
+import { validateRecipe, buildPayload, fingerprint, verifyReadback, verifyRenderedAnnotations, machineText } from '../scripts/recipe.mjs';
 import { client, cookieHeader, target } from '../scripts/cookidoo-client.mjs';
 import { upload } from '../scripts/upload.mjs';
 import { visibleRecipe } from '../scripts/website-recipe.mjs';
@@ -46,11 +46,32 @@ test('payload preserves exact settings, reverse direction and safeguards as text
     [5,null,5,false],[180,120,1,false],[480,120,1,true],[1200,100,1,true],[120,90,1,true]]);
   assert.equal(recipe.steps.reduce((n,s)=>n+(s.machine?.seconds??0),0),1985);
   for(const i of [2,3,4]) assert.match(payload.instructions[i].text,/Obroty wsteczne 1/);
-  assert.ok(payload.instructions.every(s=>s.annotations.length===0));
+  assert.equal(payload.instructions.flatMap(s=>s.annotations).filter(a=>a.type==='TTS').length,5);
   assert.doesNotMatch(payload.instructions[5].text,/Ustawienia/);
   assert.match(payload.hints,/maksymalnego poziomu napełnienia/);
   assert.match(payload.instructions[2].text,/pokrywę TM7/);
   assert.match(payload.instructions[4].text,/zahartuj/);
+});
+test('all twelve ingredients have exact spans and five settings preserve time, temperature and direction',()=>{
+  assert.deepEqual(recipe.steps.map(s=>s.ingredientSpans.length),[1,1,1,7,1,1]);
+  for (const [i,step] of payload.instructions.entries()) {
+    for (const a of step.annotations) {
+      const covered=step.text.slice(a.position.offset,a.position.offset+a.position.length);
+      if(a.type==='INGREDIENT') assert.equal(covered,a.data.description);
+      else {
+        const m=recipe.steps[i].machine;
+        assert.ok(covered.includes('Obroty'));
+        assert.equal(a.data.time,m.seconds);assert.equal(a.data.speed,String(m.speed));
+        assert.equal(a.data.direction,m.reverse?'CCW':undefined);
+        assert.deepEqual(a.data.temperature,m.temperature===null?undefined:{value:String(m.temperature),unit:'C'});
+      }
+    }
+  }
+  assert.equal(payload.instructions[5].annotations.some(a=>a.type==='TTS'),false);
+  for(const [i,amount] of [[0,'100 g cebuli'],[1,'30 g masła'],[2,'500 g pieczarek'],[3,'400 g ziemniaków'],[3,'100 g marchewki'],[3,'800 g bulionu'],[4,'120 g śmietanki']]) assert.ok(payload.instructions[i].text.includes(amount));
+  const invalid=copy();invalid.steps[0].ingredientSpans=['missing amount'];assert.throws(()=>buildPayload(invalid));
+  const unicode=copy();unicode.steps[0].text='🍲 '+unicode.steps[0].text;
+  const step=buildPayload(unicode).instructions[0];const a=step.annotations[0];assert.equal(step.text.slice(a.position.offset,a.position.offset+a.position.length),'100 g cebuli');
 });
 test('invalid versions, locale, model, times, ingredients and machine fields fail',()=>{
   for(const patch of [{schemaVersion:2},{id:'../x'},{locale:'de-DE'},{model:'TM6'},{servings:0},{totalTime:NaN},{prepTime:99999},{ingredients:[]},{steps:[]},{notes:null},{name:''}]) {
@@ -60,6 +81,12 @@ test('invalid versions, locale, model, times, ingredients and machine fields fai
     const r=copy(); Object.assign(r.steps[0].machine,patch); assert.throws(()=>validateRecipe(r));
   }
   assert.notEqual(fingerprint(recipe),fingerprint({...copy(),servings:5}));
+});
+test('editor verification rejects missing ingredient or settings actions',()=>{
+  const html=recipe.steps.map(s=>s.ingredientSpans.map(v=>`<cr-ingredient >${v}</cr-ingredient>`).join('')+(s.machine?`<cr-tts>${machineText(s.machine)}</cr-tts>`:'')).join('');
+  assert.equal(verifyRenderedAnnotations(html,recipe),true);
+  assert.throws(()=>verifyRenderedAnnotations(html.replace('<cr-ingredient >100 g cebuli</cr-ingredient>','100 g cebuli'),recipe));
+  assert.throws(()=>verifyRenderedAnnotations(html.replace(/<cr-tts>[^<]*<\/cr-tts>/,''),recipe));
 });
 test('read-back checks exact title, content and order, not just counts',()=>{
   assert.equal(verifyReadback(readback(),recipe),true);

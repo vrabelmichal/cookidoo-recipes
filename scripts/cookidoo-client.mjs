@@ -30,6 +30,14 @@ export function client({ host, locale, cookies, fetchImpl = fetch }) {
   const base = target(host, locale);
   return {
     base,
+    async editor(id) {
+      if (!/^[A-Za-z0-9_-]{1,128}$/.test(id)) throw new Error('Invalid recipe ID.');
+      try {
+        const response=await fetchImpl(`${base}/${id}/edit`,{redirect:'manual',signal:AbortSignal.timeout(20000),headers:{Accept:'text/html',Cookie:cookies}});
+        if(!response.ok || (response.status>=300 && response.status<400) || !response.headers.get('content-type')?.includes('text/html')) throw new Error();
+        return await response.text();
+      } catch { throw new Error('Could not verify saved ingredient/settings actions in the recipe editor.'); }
+    },
     async request(method, id = '', payload) {
       if (id && !/^[A-Za-z0-9_-]{1,128}$/.test(id) && !(method === 'POST' && id === 'image/signature')) throw new Error('Invalid recipe ID.');
       let response;

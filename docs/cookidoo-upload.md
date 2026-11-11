@@ -9,14 +9,16 @@ No cookie, login or account request goes through the public recipe website.
 read-back, error and recovery tests. **Verified against the owner's Polish account:**
 read-only access and exact read-back of the imported recipe's title, all 12
 ingredients, six steps and saved TM7 model tag. **Not verified:** cooking on an
-actual Thermomix or guided actions.
+actual Thermomix. The editor also renders all 12 ingredient actions and five
+machine-setting actions; this does not establish physical device behavior.
 The command fails if the selected host/locale does not return the expected JSON.
 
-Machine times, temperatures, speeds and reverse direction are imported as Polish
-**text instructions**. This version does not generate guided device actions.
-Review the settings and enter them manually while cooking, or configure them in
-the Cookidoo editor yourself. The recipe and uploader now target **TM7**. The
-public page at the same root URL also uses the TM7 instructions.
+Each step contains the ingredient amounts used at that stage and one short
+settings line. Ingredient annotations mark the amounts for weighing. TTS
+annotations specify seconds, speed, temperature and reverse direction (`CCW`).
+These annotations are accepted and rendered by Cookidoo. Review them on your
+TM7 before cooking: physical device execution is not yet tested. The final serving
+step has herbs to taste and no machine action. The public page uses the same steps.
 
 ## 1. Open the implementation branch and preview
 
@@ -238,3 +240,22 @@ Cookidoo accepted the notes as a separate `hints` string; the rendered recipe an
 edit HTML contain the notes (the regular JSON read-back omits this field).
 The signed Cloudinary photo upload and image read-back succeeded on the same
 replacement recipe. Content/model read-back and all 20 offline tests pass.
+
+### Ingredient weights and machine actions (2026-11-11)
+
+The current recipe includes all ingredient amounts directly in their preparation
+steps. Twelve INGREDIENT annotations and five TTS annotations are built with
+UTF-16 text offsets. TTS data uses seconds, string speed, optional Celsius
+ temperature and `direction: CCW` for reverse. This request shape was inspected in
+[dfourn/cookidoo-uploader's schema implementation](https://github.com/dfourn/cookidoo-uploader/blob/main/cookidoo_uploader/schema.py).
+
+The owner requested skipping automatic image upload; the fixture no longer
+selects an image. The previous saved recipe returned HTTP 410 and the collection
+was empty. Its ledger was archived before creating one authorized replacement.
+The new recipe's text, ingredients and TM7 tag match read-back. The authenticated
+editor HTML renders 12 `cr-ingredient` elements and five `cr-tts` elements, in the
+expected order and with exact amounts/settings labels. The CLI checks these
+markers on every upload/completion check because the normal JSON view omits
+annotations. This verifies persistence/rendering, not physical TM7 execution.
+All 22 offline tests pass, including exact spans, Unicode offsets, reverse flags,
+settings and editor-marker regression tests. The public HTML/JSON-LD stays in sync.

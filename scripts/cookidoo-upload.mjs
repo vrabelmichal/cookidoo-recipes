@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { resolve, relative, isAbsolute, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { buildPayload, validateRecipe } from './recipe.mjs';
+import { buildPayload, validateRecipe, verifyRenderedAnnotations } from './recipe.mjs';
 import { client, cookieHeader, target } from './cookidoo-client.mjs';
 import { upload } from './upload.mjs';
 import { attachImage } from './cookidoo-image.mjs';
@@ -30,7 +30,7 @@ async function main() {
     try { recipe = JSON.parse(await readFile(resolve(file), 'utf8')); }
     catch { throw new Error('Cannot read recipe JSON. Check the path and JSON syntax.'); }
     validateRecipe(recipe);
-    console.log(`${recipe.name} | ${recipe.servings} servings | ${recipe.model} | ${recipe.locale}\nTarget: ${base}\nTotal: ${recipe.totalTime}s; preparation: ${recipe.prepTime}s; active machine: ${recipe.steps.reduce((n,s) => n + (s.machine?.seconds ?? 0), 0)}s\nPlain-text settings only; guided machine actions are not generated.`);
+    console.log(`${recipe.name} | ${recipe.servings} servings | ${recipe.model} | ${recipe.locale}\nTarget: ${base}\nTotal: ${recipe.totalTime}s; preparation: ${recipe.prepTime}s; active machine: ${recipe.steps.reduce((n,s) => n + (s.machine?.seconds ?? 0), 0)}s\nIngredient weighing and machine-setting annotations included; physical TM7 behavior needs verification.`);
     if (command === 'preview' || command === 'upload') console.log(JSON.stringify(buildPayload(recipe), null, 2));
     if (command === 'validate' || command === 'preview') return;
     if (!values.confirm) throw new Error('Upload requires --confirm after reviewing the preview.');
@@ -71,6 +71,7 @@ async function main() {
       },
     };
     const result = await upload({ recipe, api, store, confirm: values.confirm, resume: values.resume });
+    verifyRenderedAnnotations(await api.editor(result.recipeId),recipe);
     if (recipe.image) {
       const saved = await api.request('GET',result.recipeId);
       if (!saved.recipeContent?.image) await attachImage({api,recipeId:result.recipeId,file:resolve(root,recipe.image)});
