@@ -2,3 +2,6 @@
 *
 !index.html
 !zupa-pieczarkowa-thermomix.html
+!assets/
+assets/*
+!assets/zupa-pieczarkowa.png

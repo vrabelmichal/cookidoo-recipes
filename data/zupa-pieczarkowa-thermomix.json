@@ -4,27 +4,28 @@
   "name": "Zupa pieczarkowa z ziemniakami – Thermomix TM7",
   "locale": "pl-PL",
   "model": "TM7",
+  "image": "assets/zupa-pieczarkowa.png",
   "servings": 4,
   "prepTime": 600,
   "totalTime": 2580,
   "ingredients": [
     "500 g pieczarek",
     "400 g ziemniaków",
-    "100 g marchewki",
-    "100 g cebuli",
+    "1 marchewka (ok. 100 g)",
+    "1 cebula (ok. 100 g)",
     "30 g masła",
     "800 g bulionu warzywnego lub drobiowego",
     "120 g śmietanki 18% lub 30%",
     "1 liść laurowy",
     "2 ziarna ziela angielskiego",
-    "1/2 łyżeczki soli (do smaku)",
-    "1/4 łyżeczki pieprzu",
+    "½ łyżeczki soli (do smaku)",
+    "¼ łyżeczki pieprzu",
     "Świeży koperek lub natka pietruszki"
   ],
   "steps": [
     {
       "name": "Posiekaj cebulę",
-      "text": "Włóż cebulę przekrojoną na pół do naczynia miksującego. 5 sekund, obroty 5. Zgarnij kopystką ze ścianek.",
+      "text": "Włóż cebulę przekrojoną na pół do naczynia miksującego. Zgarnij cebulę kopystką ze ścianek.",
       "machine": {
         "seconds": 5,
         "temperature": null,
@@ -34,7 +35,7 @@
     },
     {
       "name": "Podsmaż cebulę",
-      "text": "Dodaj masło. Załóż pokrywę TM7 z prawidłowo zamocowaną osłoną pokrywy. 3 minuty, 120°C, obroty 1.",
+      "text": "Dodaj 30 g masła. Załóż pokrywę TM7 z prawidłowo zamocowaną osłoną pokrywy.",
       "machine": {
         "seconds": 180,
         "temperature": 120,
@@ -44,7 +45,7 @@
     },
     {
       "name": "Duś pieczarki",
-      "text": "Dodaj pieczarki pokrojone ręcznie w plasterki. Załóż pokrywę TM7 z prawidłowo zamocowaną osłoną pokrywy. Pozostaw otwory odprowadzające parę drożne. 8 minut, 120°C, obroty wsteczne 1.",
+      "text": "Dodaj pieczarki pokrojone ręcznie w plasterki. Załóż pokrywę TM7 z prawidłowo zamocowaną osłoną pokrywy i pozostaw otwory odprowadzające parę drożne.",
       "machine": {
         "seconds": 480,
         "temperature": 120,
@@ -54,7 +55,7 @@
     },
     {
       "name": "Ugotuj zupę",
-      "text": "Dodaj ziemniaki pokrojone w kostkę, marchewkę, bulion, liść laurowy, ziele angielskie, sól i pieprz. 20 minut, 100°C, obroty wsteczne 1. Sprawdź miękkość ziemniaków; ewentualnie gotuj 3–5 minut dłużej.",
+      "text": "Dodaj ziemniaki w kostce (ok. 1,5 cm), marchewkę pokrojoną w drobną kostkę lub półplasterki, bulion, liść laurowy, ziele angielskie, sól i pieprz. Sprawdź miękkość ziemniaków; jeśli trzeba, gotuj 3–5 minut dłużej.",
       "machine": {
         "seconds": 1200,
         "temperature": 100,
@@ -64,7 +65,7 @@
     },
     {
       "name": "Dodaj śmietankę",
-      "text": "Dodaj śmietankę. 2 minuty, 90°C, obroty wsteczne 1. Kwaśną śmietanę 18% zahartuj wcześniej gorącą zupą.",
+      "text": "Jeśli możesz, wyjmij liść laurowy i ziele angielskie. Dodaj 120 g śmietanki. Kwaśną śmietanę 18% zahartuj najpierw kilkoma łyżkami gorącej zupy.",
       "machine": {
         "seconds": 120,
         "temperature": 90,
@@ -74,14 +75,13 @@
     },
     {
       "name": "Podawaj",
-      "text": "Posyp koperkiem lub natką pietruszki i dopraw do smaku."
+      "text": "Dodaj posiekany koperek lub natkę pietruszki. Wymieszaj kopystką, dopraw do smaku i podawaj."
     }
   ],
   "notes": [
     "Nie przekraczaj oznaczenia maksymalnego poziomu napełnienia naczynia TM7 (2,2 l). Jeśli składniki się nie mieszczą, zmniejsz ilość bulionu.",
     "Podczas pracy używaj pokrywy TM7 z prawidłowo zamocowaną osłoną pokrywy. Nie zasłaniaj otworów odprowadzających parę. Przed otwarciem zatrzymaj urządzenie i ostrożnie otwieraj pokrywę z dala od twarzy.",
     "Po dodaniu bulionu gotuj zupę w temperaturze nie wyższej niż 100°C i przy prędkości nie większej niż 2. Ten przepis używa obrotów wstecznych 1. Jeśli zupa zaczyna kipieć, zmniejsz temperaturę lub przerwij gotowanie.",
-    "Po dodaniu pieczarek używaj obrotów wstecznych, aby zachować kawałki warzyw.",
-    "Marchewkę pokrój w drobną kostkę lub półplasterki, ziemniaki w kostkę ok. 1,5 cm. Jeśli możesz, przed dodaniem śmietanki wyjmij liść laurowy i ziele angielskie."
+    "W Thermomixie pieczarki raczej się duszą niż rumienią. Dla mocniejszego smaku podsmaż je wcześniej na patelni."
   ]
 }

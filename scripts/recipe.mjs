@@ -9,6 +9,7 @@ export function validateRecipe(r) {
   require(text(r.name) && r.name.length <= 200, 'name');
   require(r.locale === 'pl-PL', 'this version supports Polish content (pl-PL) only');
   require(r.model === 'TM7', 'this version targets TM7 only');
+  require(r.image === undefined || r.image === 'assets/zupa-pieczarkowa.png', 'unsupported local image path');
   require(seconds(r.totalTime) && seconds(r.prepTime) && r.prepTime <= r.totalTime, 'times must be seconds');
   require(Number.isSafeInteger(r.servings) && r.servings > 0 && r.servings <= 100, 'servings');
   require(Array.isArray(r.ingredients) && r.ingredients.length > 0 && r.ingredients.length <= 100 && r.ingredients.every(text), 'ingredients');
@@ -26,19 +27,24 @@ export function validateRecipe(r) {
   return r;
 }
 export function machineText(m) {
-  return `${m.seconds} s / ${m.temperature === null ? 'bez podgrzewania' : `${m.temperature}°C`} / obroty ${m.reverse ? 'wsteczne ' : ''}${m.speed}`;
+  const minutes = m.seconds % 60 === 0;
+  const value = minutes ? m.seconds / 60 : m.seconds;
+  const plural = new Intl.PluralRules('pl').select(value);
+  const unit = minutes ? { one: 'minuta', few: 'minuty', many: 'minut' } : { one: 'sekunda', few: 'sekundy', many: 'sekund' };
+  return `${value} ${unit[plural] ?? (minutes ? 'minut' : 'sekund')}${m.temperature === null ? '' : ` / ${m.temperature}°C`} / Obroty ${m.reverse ? 'wsteczne ' : ''}${m.speed}`;
 }
 export function buildPayload(recipe) {
   const r = validateRecipe(recipe);
   return {
     ingredients: r.ingredients.map(text => ({ type: 'INGREDIENT', text })),
-    instructions: r.steps.map((s, i) => ({
+    instructions: r.steps.map(s => ({
       type: 'STEP',
-      text: `${s.name}. ${s.text}${s.machine ? ` Ustawienia: ${machineText(s.machine)}.` : ''}${i === 0 && r.notes.length ? ` Uwagi: ${r.notes.join(' ')}` : ''}`,
+      text: `${s.name}\n${s.text}${s.machine ? `\n${machineText(s.machine)}` : ''}`,
       // Reverse direction is not established by the upstream TTS schema.
       // Preserve ALL settings as text rather than emit potentially unsafe actions.
       annotations: [],
     })),
+    hints: r.notes.join('\n\n'),
     tools: [r.model], totalTime: r.totalTime, prepTime: r.prepTime,
     yield: { value: r.servings, unitText: 'portion' },
   };

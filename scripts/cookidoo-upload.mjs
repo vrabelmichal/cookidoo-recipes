@@ -7,6 +7,7 @@ import { parseArgs } from 'node:util';
 import { buildPayload, validateRecipe } from './recipe.mjs';
 import { client, cookieHeader, target } from './cookidoo-client.mjs';
 import { upload } from './upload.mjs';
+import { attachImage } from './cookidoo-image.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const local = resolve(homedir(), '.cookidoo-recipes');
@@ -69,7 +70,13 @@ async function main() {
         await rename(temp, stateFile);
       },
     };
-    console.log(JSON.stringify(await upload({ recipe, api, store, confirm: values.confirm, resume: values.resume }), null, 2));
+    const result = await upload({ recipe, api, store, confirm: values.confirm, resume: values.resume });
+    if (recipe.image) {
+      const saved = await api.request('GET',result.recipeId);
+      if (!saved.recipeContent?.image) await attachImage({api,recipeId:result.recipeId,file:resolve(root,recipe.image)});
+      result.photo = 'verified';
+    }
+    console.log(JSON.stringify(result, null, 2));
   } finally { await lock.close(); await unlink(`${stateFile}.lock`); }
 }
 main().catch(error => {

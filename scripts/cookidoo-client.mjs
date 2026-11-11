@@ -31,7 +31,7 @@ export function client({ host, locale, cookies, fetchImpl = fetch }) {
   return {
     base,
     async request(method, id = '', payload) {
-      if (id && !/^[A-Za-z0-9_-]{1,128}$/.test(id)) throw new Error('Invalid recipe ID.');
+      if (id && !/^[A-Za-z0-9_-]{1,128}$/.test(id) && !(method === 'POST' && id === 'image/signature')) throw new Error('Invalid recipe ID.');
       let response;
       try {
         response = await fetchImpl(`${base}${id ? `/${id}` : ''}`, {

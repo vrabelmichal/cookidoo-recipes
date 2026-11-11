@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { validateRecipe, buildPayload, fingerprint, verifyReadback } from '../scripts/recipe.mjs';
 import { client, cookieHeader, target } from '../scripts/cookidoo-client.mjs';
 import { upload } from '../scripts/upload.mjs';
+import { visibleRecipe } from '../scripts/website-recipe.mjs';
 
 const recipe = JSON.parse(readFileSync(new URL('../data/zupa-pieczarkowa-thermomix.json', import.meta.url)));
 const copy = () => structuredClone(recipe);
@@ -22,12 +23,20 @@ function fixture({ fail = '', state = null, mismatch = false, probeFail = false 
     } };
   return { api, store, calls, recipe, confirm:true };
 }
-test('fixture matches page structured data; preserve Polish, quantities and six steps',()=>{
+test('fixture and upload match visible website ingredients and six short steps',()=>{
   const html=readFileSync(new URL('../zupa-pieczarkowa-thermomix.html',import.meta.url),'utf8');
   const source=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   assert.equal(recipe.name,source.name);
-  assert.deepEqual(recipe.ingredients,source.recipeIngredient);
-  assert.deepEqual(recipe.steps.map(s=>({ '@type':'HowToStep',name:s.name,text:s.text })),source.recipeInstructions);
+  const visible = visibleRecipe(html);
+  assert.deepEqual(recipe.ingredients,visible.ingredients);
+  assert.deepEqual(recipe.steps.map(s=>({name:s.name,text:s.text})),visible.steps.map(s=>({name:s.name,text:s.text})));
+  for (let i=0;i<6;i++) {
+    const s=visible.steps[i];
+    assert.equal(payload.instructions[i].text,`${s.name}\n${s.text}${s.settings.length ? `\n${s.settings.join(' / ')}` : ''}`);
+    assert.ok(payload.instructions[i].text.length < 420);
+    assert.doesNotMatch(payload.instructions[i].text,/Uwagi:|Ustawienia:/);
+  }
+  assert.ok(payload.instructions[0].text.length < 180);
   assert.equal(recipe.servings,4); assert.equal(recipe.ingredients.length,12); assert.equal(recipe.steps.length,6);
   assert.equal(source.totalTime,'PT43M'); assert.equal(recipe.totalTime,43*60); assert.equal(recipe.prepTime,600);
   assert.ok(recipe.notes.every(n=>!n.includes('?')));
@@ -36,10 +45,10 @@ test('payload preserves exact settings, reverse direction and safeguards as text
   assert.deepEqual(recipe.steps.slice(0,5).map(s=>[s.machine.seconds,s.machine.temperature,s.machine.speed,s.machine.reverse]),[
     [5,null,5,false],[180,120,1,false],[480,120,1,true],[1200,100,1,true],[120,90,1,true]]);
   assert.equal(recipe.steps.reduce((n,s)=>n+(s.machine?.seconds??0),0),1985);
-  for(const i of [2,3,4]) assert.match(payload.instructions[i].text,/obroty wsteczne 1/);
+  for(const i of [2,3,4]) assert.match(payload.instructions[i].text,/Obroty wsteczne 1/);
   assert.ok(payload.instructions.every(s=>s.annotations.length===0));
   assert.doesNotMatch(payload.instructions[5].text,/Ustawienia/);
-  assert.match(payload.instructions[0].text,/maksymalnego poziomu napełnienia/);
+  assert.match(payload.hints,/maksymalnego poziomu napełnienia/);
   assert.match(payload.instructions[2].text,/pokrywę TM7/);
   assert.match(payload.instructions[4].text,/zahartuj/);
 });

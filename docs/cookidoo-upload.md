@@ -151,9 +151,24 @@ does not import arbitrary unrelated recipes into an existing ledger.
 `data/zupa-pieczarkowa-thermomix.json` is version 1 of the recipe format. Times
 are integer seconds; `machine.reverse` is a boolean; the final serving step has
 no machine action. Validation is in `scripts/recipe.mjs`. An offline test checks
-the recipe name, ingredients and six step texts against the HTML's JSON-LD;
+the recipe name, ingredients and six step texts against the visible HTML;
 update both together when editing. Tests also pin all five machine settings and
 critical safety notes. No website build or path changes are required.
+
+The current fixture matches the **visible** website ingredient labels and step
+paragraphs, not the older JSON-LD wording. Each imported step has its short
+heading, website paragraph and one settings line using minutes/seconds. General
+notes are sent separately as the API's `hints` string; they are not appended to
+step 1. JSON-LD now uses the same ingredient labels and step paragraphs. Tests
+extract the visible HTML to detect drift and prevent duplicated settings/notes.
+
+The optional `image` field points to the local AI-generated PNG under `assets/`.
+After content upload, the CLI gets a signed image authorization from Cookidoo,
+uploads the PNG to Vorwerk's Cloudinary account without session cookies, patches
+the image reference on the same recipe and checks read-back. Existing images are
+preserved. If photo upload fails after content succeeds, rerun the same command
+to finish the photo without creating another recipe. The generation prompt is
+recorded in `assets/README.md`.
 
 Run `npm test` and `npm run validate` after editing. CI uses mocked transport
 only, on Node 22/24 and Windows/Linux. Authenticated commands refuse recognized
@@ -212,3 +227,14 @@ The new upload and exact read-back succeeded, including the saved TM7 model tag.
 All 18 offline tests pass. The recipe has not been cooked/tested on a TM7; guided
 machine actions are still not generated. Future runs retain the replacement's
 ledger and verify the same recipe rather than creating a duplicate.
+
+### Website-matching replacement and photo (2026-11-11)
+
+After the owner deleted the previous import, its ID returned HTTP 410 and the
+Created Recipes collection was empty. The replacement has the website's exact
+visible ingredient labels and six step paragraphs. Settings occur once per step,
+in a separate short line. The first step no longer contains the general notes.
+Cookidoo accepted the notes as a separate `hints` string; the rendered recipe and
+edit HTML contain the notes (the regular JSON read-back omits this field).
+The signed Cloudinary photo upload and image read-back succeeded on the same
+replacement recipe. Content/model read-back and all 20 offline tests pass.
