@@ -4,8 +4,9 @@
 
 **Implementation follow-up:** the `feat/local-cookidoo-uploader` branch implements
 the offline MVP and opt-in local flow. See [usage and verification limits](cookidoo-upload.md).
-This historical specification is retained; live account/device acceptance criteria
-below are still pending.
+This historical specification is retained. A subsequent owner-authorized read-back
+confirmed the imported Polish recipe content; see the usage guide for the live
+verification record. Device acceptance remains pending.
 
 **Date:** 2026-11-11  
 **Repository:** `vrabelmichal/cookidoo-recipes`  

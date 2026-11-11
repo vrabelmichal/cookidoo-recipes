@@ -96,6 +96,18 @@ test('read-only probe requires the known items schema',async()=>{
     if(data.items) await api.probe(); else await assert.rejects(api.probe(),/Unrecognized/);
   }
 });
+test('PATCH accepts successful empty/non-JSON acknowledgements; GET and POST still require JSON',async()=>{
+  for (const response of [new Response(null,{status:204}),new Response(''),new Response('OK',{headers:{'content-type':'text/plain'}}),Response.json({saved:true})]) {
+    const api=client({host:'cookidoo.pl',locale:'pl-PL',cookies:'FAKE',fetchImpl:async()=>response});
+    assert.equal(await api.request('PATCH','local-test-id',payload),null);
+  }
+  for (const method of ['GET','POST']) {
+    const api=client({host:'cookidoo.pl',locale:'pl-PL',cookies:'FAKE',fetchImpl:async()=>new Response('OK')});
+    await assert.rejects(api.request(method),/expected JSON/);
+  }
+  const api=client({host:'cookidoo.pl',locale:'pl-PL',cookies:'FAKE',fetchImpl:async()=>new Response('private error',{status:500})});
+  await assert.rejects(api.request('PATCH','local-test-id',payload),/HTTP 500/);
+});
 test('no confirmation or failed auth produces no writes',async()=>{
   const a=fixture(); a.confirm=false; await assert.rejects(upload(a),/confirm/); assert.deepEqual(a.calls,[]); assert.equal(a.store.value,null);
   const b=fixture({probeFail:true}); await assert.rejects(upload(b),/auth/); assert.deepEqual(b.calls,['probe']); assert.equal(b.store.value,null);
@@ -120,11 +132,25 @@ test('invalid create response or failure saving returned ID cannot trigger a sec
     await assert.rejects(upload({...f,resume:true}),/uncertain/);
   }
 });
-test('failed PATCH keeps ID; explicit resume updates same draft with no POST',async()=>{
+test('failed PATCH keeps ID; resume recognizes already-saved content without writes',async()=>{
   const f=fixture({fail:'PATCH'}); await assert.rejects(upload(f)); assert.equal(f.store.value.recipeId,'local-test-id');
   await assert.rejects(upload(f),/resume/);
   const resumed=fixture({state:f.store.value}); await upload({...resumed,resume:true});
+  assert.deepEqual(resumed.calls.map(x=>Array.isArray(x)?x[0]:x),['probe','GET']);
+  assert.equal(resumed.store.value.status,'complete');
+});
+test('resume patches an incomplete draft and verifies it without a second POST',async()=>{
+  const f=fixture({fail:'PATCH'}); await assert.rejects(upload(f));
+  const resumed=fixture({state:f.store.value});
+  const request=resumed.api.request; let first=true;
+  resumed.api.request=async(...args)=>{
+    const result=await request(...args);
+    if(args[0]==='GET'&&first) {first=false;result.recipeContent.recipeInstructions=[];}
+    return result;
+  };
+  await upload({...resumed,resume:true});
   assert.deepEqual(resumed.calls.map(x=>Array.isArray(x)?x[0]:x),['probe','GET','PATCH','GET']);
+  assert.equal(resumed.store.value.status,'complete');
 });
 test('read-back failure does not mark complete; changed recipe and target cannot reuse ledger',async()=>{
   const f=fixture({mismatch:true}); await assert.rejects(upload(f),/mismatch/); assert.equal(f.store.value.status,'draft');

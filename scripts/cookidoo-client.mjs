@@ -42,7 +42,12 @@ export function client({ host, locale, cookies, fetchImpl = fetch }) {
         });
         if (response.status >= 300 && response.status < 400) throw new Error('redirect');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        if (response.status === 204 && method === 'PATCH') return null;
+        // PATCH may acknowledge success with an empty or non-JSON body.
+        // The uploader verifies the actual saved content with a separate GET.
+        if (method === 'PATCH') {
+          await response.body?.cancel();
+          return null;
+        }
         if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('expected JSON');
         return await response.json();
       } catch (e) {

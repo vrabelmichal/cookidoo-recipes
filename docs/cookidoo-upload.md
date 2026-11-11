@@ -6,8 +6,9 @@ change that. This tool instead uses your own logged-in Created Recipes session.
 No cookie, login or account request goes through the public recipe website.
 
 **Verified locally:** offline validation/preview and mocked create, patch,
-read-back, error and recovery tests. **Not verified:** a live Polish account,
-the internal API's current Polish response format, or an actual Thermomix.
+read-back, error and recovery tests. **Verified against the owner's Polish account:**
+read-only access and exact read-back of the imported recipe's title, all 12
+ingredients and six steps. **Not verified:** an actual Thermomix or guided actions.
 The command fails if the selected host/locale does not return the expected JSON.
 
 Machine times, temperatures, speeds and reverse direction are imported as Polish
@@ -125,6 +126,9 @@ does not import arbitrary unrelated recipes into an existing ledger.
   ```
 
   This updates the recorded draft, checks its title first and does not POST.
+  If read-back already matches the full recipe, resume simply records completion
+  without another PATCH. Successful PATCH acknowledgements need not contain JSON;
+  completion is determined by the separate recipe read-back.
   Reapplying PATCH can overwrite manual edits in that draft. If read-back still
   differs, finish/check the recipe manually rather than create a second copy.
 - **Uncertain create (`status: creating`):** the request may have created a draft
@@ -176,4 +180,16 @@ The current full Cookidoo terms could not be retrieved during implementation;
 no conclusion about permission under those terms is claimed. Review the current
 terms in your account before deciding to use an unofficial internal integration.
 No access controls, subscription limits or security challenges are bypassed.
-No authenticated request or real upload was performed during implementation.
+No authenticated request or real upload was performed during the initial implementation;
+the later live verification is recorded below.
+
+### Live verification follow-up (2026-11-11)
+
+The owner ran the initial import against `cookidoo.pl / pl-PL`. Its PATCH saved
+the content, but the original client incorrectly required JSON in the successful
+acknowledgement. With the owner's authorization, an authenticated read-back
+confirmed the exact title, all 12 ingredients and all six steps, including the
+textual machine settings and safety notes. The response handling now accepts
+successful PATCH acknowledgements without JSON. Resume recognizes matching
+content and records completion without repeating the write. Device behavior and
+automatic guided actions remain unverified.

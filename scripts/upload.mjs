@@ -25,6 +25,13 @@ export async function upload({ recipe, api, store, confirm = false, resume = fal
   } else {
     const draft = await api.request('GET', state.recipeId);
     if (draft?.recipeContent?.name !== recipe.name) throw new Error('Recorded draft title differs; refusing to edit it.');
+    let matches;
+    try { matches = verifyReadback(draft, recipe); }
+    catch { matches = false; }
+    if (matches) {
+      await store.write({ ...state, status: 'complete' });
+      return { recipeId: state.recipeId, url: `${api.base}/${state.recipeId}/edit`, existing: true };
+    }
   }
   await api.request('PATCH', state.recipeId, buildPayload(recipe));
   verifyReadback(await api.request('GET', state.recipeId), recipe);
